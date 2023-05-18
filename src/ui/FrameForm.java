@@ -1,6 +1,7 @@
 package ui;
 
 import game.ClickerGame;
+import game.items.AutoClicker;
 import game.upgrades.PlayerClicker;
 
 import javax.swing.*;
@@ -11,14 +12,16 @@ public class FrameForm extends JFrame {
     private JTextField clicksTextField;
     private JPanel mainPanel;
     private JButton mainClicker;
-    private JButton upgrade1;
-    private JButton upgrade5;
-    private JButton upgrade4;
-    private JButton upgrade3;
-    private JButton upgrade2;
+    private JButton item1;
+    private JButton item5;
+    private JButton item4;
+    private JButton item3;
+    private JButton item2;
     private JPanel shop;
     private JComboBox shopSelector;
+    String[] selectorTabs = {"Items", "Upgrades"};
 
+    AutoClicker ac = new AutoClicker();
 
     public FrameForm(){
         setContentPane(mainPanel);
@@ -27,6 +30,7 @@ public class FrameForm extends JFrame {
         setDefaultCloseOperation(3);
         setVisible(true);
         setResizable(false);
+        shopSelector.setModel(new DefaultComboBoxModel(selectorTabs));
 
         mainClicker.addActionListener(new ActionListener() {
             @Override
@@ -35,6 +39,14 @@ public class FrameForm extends JFrame {
                 ClickerGame.addToClicks(PlayerClicker.getCurrentClicks());
             }
         });
+
+        //set items
+        item1.setText(ac.getName());
+
+
     }
 
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+    }
 }
