@@ -7,9 +7,10 @@ import game.upgrades.PlayerClicker;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.TimerTask;
+import java.util.Timer;
 
 public class FrameForm extends JFrame {
-    private JTextField clicksTextField;
     private JPanel mainPanel;
     private JButton mainClicker;
     private JButton item1;
@@ -19,6 +20,7 @@ public class FrameForm extends JFrame {
     private JButton item2;
     private JPanel shop;
     private JComboBox shopSelector;
+    private JLabel clicksLabel;
     String[] selectorTabs = {"Items", "Upgrades"};
     AutoClicker ac = new AutoClicker();
 
@@ -31,26 +33,51 @@ public class FrameForm extends JFrame {
         setVisible(true);
         setResizable(false);
         shopSelector.setModel(new DefaultComboBoxModel(selectorTabs));
+        clicksLabel.setText("Clicks: " + ClickerGame.getClicks());
+
 
         mainClicker.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                clicksTextField.setText("Clicks: " + ClickerGame.getClicks());
                 ClickerGame.addToClicks(PlayerClicker.getCurrentClicks());
+                clicksLabel.setText("Clicks: " + ClickerGame.getClicks());
+                if(ClickerGame.getClicks() == 100){
+                    item1.setEnabled(true);
+                    item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost()+" Clicks)");
+                }
             }
         });
 
         //item stuff
-        item1.setEnabled(true);
-        item1.setText("Auto Clicker +1 CPS (50 Clicks)");
+        item1.setToolTipText("Buy an auto clicker to click the button for you!");
+        item1.setText("Unlock at 100 clicks");
         item1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost()+" Clicks)");
-                ClickerGame.addToCPS(ac);
-                clicksTextField.setText("Clicks: " + ClickerGame.getClicks());
+                if(ClickerGame.getClicks() >= 50) {
+                    ClickerGame.subtractClicks(ac.getCost());
+                    ac.setCost(ac.getCost());
+                    item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost() + " Clicks)");
+                    ClickerGame.addToCPS(ac);
+                    TimerTask task = new TimerTask() {
+                        @Override
+                        public void run() {
+                            clicksLabel.setText("Clicks: " + ClickerGame.getClicks());
+                        }
+
+                    };
+
+                    Timer timer = new Timer();
+                    timer.schedule(task, 0L, 500L); //call the run() method at 1 second intervals
+                } else{
+                    JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
+                }
             }
         });
+
+        item2.setEnabled(true);
+        item2.setText("Hire Mercenary");
+        item2.setToolTipText("These top of the line mercs are really good at drag clicking...");
 
     }
 }

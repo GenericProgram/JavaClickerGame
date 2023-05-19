@@ -7,13 +7,6 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="c435c" class="javax.swing.JTextField" binding="clicksTextField" default-binding="true">
-        <constraints border-constraint="North"/>
-        <properties>
-          <editable value="false"/>
-          <text value="Clicks: 0"/>
-        </properties>
-      </component>
       <component id="72b4" class="javax.swing.JButton" binding="mainClicker">
         <constraints border-constraint="West"/>
         <properties>
@@ -86,6 +79,12 @@
           </component>
         </children>
       </grid>
+      <component id="89b3e" class="javax.swing.JLabel" binding="clicksLabel">
+        <constraints border-constraint="North"/>
+        <properties>
+          <text value="Clicks: 0"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>
