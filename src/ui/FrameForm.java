@@ -20,8 +20,8 @@ public class FrameForm extends JFrame {
     private JPanel shop;
     private JComboBox shopSelector;
     String[] selectorTabs = {"Items", "Upgrades"};
-
     AutoClicker ac = new AutoClicker();
+
 
     public FrameForm(){
         setContentPane(mainPanel);
@@ -40,13 +40,17 @@ public class FrameForm extends JFrame {
             }
         });
 
-        //set items
-        item1.setText(ac.getName());
+        //item stuff
+        item1.setEnabled(true);
+        item1.setText("Auto Clicker +1 CPS (50 Clicks)");
+        item1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost()+" Clicks)");
+                ClickerGame.addToCPS(ac);
+                clicksTextField.setText("Clicks: " + ClickerGame.getClicks());
+            }
+        });
 
-
-    }
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
     }
 }
