@@ -12,4 +12,5 @@ public class Item {
     public int getCost() {return cost;}
     public void setCost(int cost) {this.cost = cost;}
     public void setClicksPerSecond(int clicksPerSecond) {this.clicksPerSecond = clicksPerSecond;}
+    public void addAmountOwned(int add){amountOwned+=add;}
 }

@@ -64,7 +64,9 @@
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <font size="28"/>
+            </properties>
           </component>
           <component id="f7241" class="javax.swing.JButton" binding="item1">
             <constraints>
@@ -82,6 +84,8 @@
       <component id="89b3e" class="javax.swing.JLabel" binding="clicksLabel">
         <constraints border-constraint="North"/>
         <properties>
+          <font size="22" style="1"/>
+          <horizontalAlignment value="0"/>
           <text value="Clicks: 0"/>
         </properties>
       </component>
