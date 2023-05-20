@@ -31,11 +31,10 @@ public class ClickerGame {
 
     public static void addToCPS(Item item){
         try{
-            totalClicksPerSecond += item.getClicksPerSecond();
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-                    clicks += totalClicksPerSecond;
+                    clicks += item.getClicksPerSecond();
                 }
             };
             Timer timer = new Timer();

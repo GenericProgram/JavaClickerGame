@@ -23,9 +23,9 @@ public class FrameForm extends JFrame {
     private JComboBox shopSelector;
     private JLabel clicksLabel;
     String[] selectorTabs = {"Items", "Upgrades"};
+
     AutoClicker ac = new AutoClicker();
     Mercenary merc = new Mercenary();
-
 
     public FrameForm(){
         setContentPane(mainPanel);
@@ -36,6 +36,18 @@ public class FrameForm extends JFrame {
         setResizable(false);
         shopSelector.setModel(new DefaultComboBoxModel(selectorTabs));
         clicksLabel.setText("Clicks: " + ClickerGame.getClicks());
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                clicksLabel.setText("Clicks: " + ClickerGame.getClicks());
+                if(ClickerGame.getClicks() >= 750) {
+                    item2.setEnabled(true);
+                    item2.setText(merc.getName() + " +" + merc.getClicksPerSecond() + " CPS (" + merc.getCost()+" Clicks)");
+                }
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(task, 0L, 1L); //call the run() method at 1 second intervals
 
         //Main btn
         mainClicker.setText("+1 Clicks");
@@ -64,7 +76,7 @@ public class FrameForm extends JFrame {
                 if(ClickerGame.getClicks() >= ac.getCost()) {
                     //Remove clicks and raise price
                     ClickerGame.subtractClicks(ac.getCost());
-                    double multiplier = ac.getCost() * 1.1;
+                    double multiplier = ac.getCost() * 0.7;
                     ac.setCost(ac.getCost() + (int)multiplier);
 
                     //update amount owned in tooltips
@@ -74,20 +86,6 @@ public class FrameForm extends JFrame {
                     //Set the text of the button and start clicking
                     item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost() + " Clicks)");
                     ClickerGame.addToCPS(ac);
-                    TimerTask task = new TimerTask() {
-                        @Override
-                        public void run() {
-                            clicksLabel.setText("Clicks: " + ClickerGame.getClicks());
-                            if(ClickerGame.getClicks() >= 750) {
-                                item2.setEnabled(true);
-                                item2.setText(merc.getName() + " +" + merc.getClicksPerSecond() + " CPS (" + merc.getCost()+" Clicks)");
-                            }
-                        }
-
-                    };
-
-                    Timer timer = new Timer();
-                    timer.schedule(task, 0L, 500L); //call the run() method at 1 second intervals
                 } else{
                     JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
                 }
@@ -102,7 +100,7 @@ public class FrameForm extends JFrame {
                 if(ClickerGame.getClicks() >= merc.getCost()) {
                     //Remove clicks and raise price
                     ClickerGame.subtractClicks(merc.getCost());
-                    double multiplier = merc.getCost() * 1.1;
+                    double multiplier = merc.getCost() * 0.7;
                     merc.setCost(merc.getCost() + (int)multiplier);
 
                     //update amount owned in tooltips
@@ -112,12 +110,10 @@ public class FrameForm extends JFrame {
                     //Set the text of the button and start clicking
                     item2.setText(merc.getName() + " +" + merc.getClicksPerSecond() + " CPS (" + merc.getCost() + " Clicks)");
                     ClickerGame.addToCPS(merc);
-
                 } else{
                     JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
-
     }
 }
