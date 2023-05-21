@@ -1,8 +1,6 @@
 package game;
 
 import game.items.Item;
-import game.upgrades.PlayerClicker;
-import ui.FrameForm;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -10,6 +8,7 @@ import java.util.TimerTask;
 public class ClickerGame {
     static int clicks = 0;
     static int totalClicksPerSecond = 0;
+    static boolean firstTime = true;
 
     public ClickerGame(){
 
@@ -30,11 +29,19 @@ public class ClickerGame {
     public static int getTotalClicksPerSecond() {return totalClicksPerSecond;}
 
     public static void addToCPS(Item item){
+        if(firstTime){
+            firstTime = false;
+            startCount();
+        }
+        totalClicksPerSecond += item.getClicksPerSecond();
+    }
+
+    private static void startCount(){
         try{
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-                    clicks += item.getClicksPerSecond();
+                    clicks += totalClicksPerSecond;
                 }
             };
             Timer timer = new Timer();

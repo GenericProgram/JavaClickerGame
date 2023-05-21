@@ -40,6 +40,11 @@ public class FrameForm extends JFrame {
             @Override
             public void run() {
                 clicksLabel.setText("Clicks: " + ClickerGame.getClicks());
+                clicksLabel.setToolTipText("Total clicks per second: " + ClickerGame.getTotalClicksPerSecond());
+                if(ClickerGame.getClicks() == 100){
+                    item1.setEnabled(true);
+                    item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost()+" Clicks)");
+                }
                 if(ClickerGame.getClicks() >= 750) {
                     item2.setEnabled(true);
                     item2.setText(merc.getName() + " +" + merc.getClicksPerSecond() + " CPS (" + merc.getCost()+" Clicks)");
@@ -56,14 +61,6 @@ public class FrameForm extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 ClickerGame.addToClicks(PlayerClicker.getCurrentClicks());
                 clicksLabel.setText("Clicks: " + ClickerGame.getClicks());
-                if(ClickerGame.getClicks() == 100){
-                    item1.setEnabled(true);
-                    item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost()+" Clicks)");
-                }
-                if(ClickerGame.getClicks() >= 750){
-                    item2.setEnabled(true);
-                    item2.setText(merc.getName() + " +" + merc.getClicksPerSecond() + " CPS (" + merc.getCost()+" Clicks)");
-                }
             }
         });
 
@@ -76,7 +73,7 @@ public class FrameForm extends JFrame {
                 if(ClickerGame.getClicks() >= ac.getCost()) {
                     //Remove clicks and raise price
                     ClickerGame.subtractClicks(ac.getCost());
-                    double multiplier = ac.getCost() * 0.7;
+                    double multiplier = ac.getCost() * 0.4;
                     ac.setCost(ac.getCost() + (int)multiplier);
 
                     //update amount owned in tooltips
