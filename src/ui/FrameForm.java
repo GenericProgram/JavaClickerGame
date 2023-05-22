@@ -1,6 +1,7 @@
 package ui;
 
 import game.ClickerGame;
+import game.items.ArtificialIntelligence;
 import game.items.AutoClicker;
 import game.items.Mercenary;
 import game.upgrades.PlayerClicker;
@@ -26,6 +27,7 @@ public class FrameForm extends JFrame {
 
     AutoClicker ac = new AutoClicker();
     Mercenary merc = new Mercenary();
+    ArtificialIntelligence ai = new ArtificialIntelligence();
 
     public FrameForm(){
         setContentPane(mainPanel);
@@ -48,6 +50,10 @@ public class FrameForm extends JFrame {
                 if(ClickerGame.getClicks() >= 750) {
                     item2.setEnabled(true);
                     item2.setText(merc.getName() + " +" + merc.getClicksPerSecond() + " CPS (" + merc.getCost()+" Clicks)");
+                }
+                if(ClickerGame.getClicks() >= 3000) {
+                    item3.setEnabled(true);
+                    item3.setText(ai.getName() + " +" + ai.getClicksPerSecond() + " CPS (" + ai.getCost()+" Clicks)");
                 }
             }
         };
@@ -112,5 +118,30 @@ public class FrameForm extends JFrame {
                 }
             }
         });
+
+        item3.setToolTipText("Create an AI to generate clicks at a expedient rate!");
+        item3.setText("Unlock at 3000 clicks");
+        item3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(ClickerGame.getClicks() >= ai.getCost()) {
+                    //Remove clicks and raise price
+                    ClickerGame.subtractClicks(ai.getCost());
+                    double multiplier = ai.getCost() * 0.7;
+                    ai.setCost(ai.getCost() + (int)multiplier);
+
+                    //update amount owned in tooltips
+                    ai.addAmountOwned(1);
+                    item3.setToolTipText("Create an AI to generate clicks at a expedient rate! Owned: " + merc.getAmountOwned());
+
+                    //Set the text of the button and start clicking
+                    item3.setText(ai.getName() + " +" + ai.getClicksPerSecond() + " CPS (" + ai.getCost() + " Clicks)");
+                    ClickerGame.addToCPS(ai);
+                } else{
+                    JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
     }
 }
