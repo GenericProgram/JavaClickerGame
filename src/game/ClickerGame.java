@@ -9,6 +9,14 @@ public class ClickerGame {
     static int clicks = 0;
     static int totalClicksPerSecond = 0;
     static boolean firstTime = true;
+    int multiplier = 1000;
+    static TimerTask task = new TimerTask() {
+        @Override
+        public void run() {
+            clicks += totalClicksPerSecond;
+        }
+    };
+    static Timer timer = new Timer();
 
     public ClickerGame(){
 
@@ -38,13 +46,6 @@ public class ClickerGame {
 
     private static void startCount(){
         try{
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    clicks += totalClicksPerSecond;
-                }
-            };
-            Timer timer = new Timer();
             timer.schedule(task, 0L, 1000L); //call the run() method at 1 second intervals
         }catch (Exception e){
             e.printStackTrace();

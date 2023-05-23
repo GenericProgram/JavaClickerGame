@@ -6,5 +6,6 @@ public class AutoClicker extends Item {
         clicksPerSecond = 1;
         cost = 50;
         amountOwned = 0;
+        isUnlocked = false;
     }
 }

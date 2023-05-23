@@ -6,5 +6,7 @@ public class Mercenary extends Item{
         clicksPerSecond = 5;
         cost = 500;
         amountOwned = 0;
+        isUnlocked = false;
+
     }
 }

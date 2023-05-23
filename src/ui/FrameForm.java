@@ -1,9 +1,7 @@
 package ui;
 
 import game.ClickerGame;
-import game.items.ArtificialIntelligence;
-import game.items.AutoClicker;
-import game.items.Mercenary;
+import game.items.*;
 import game.upgrades.PlayerClicker;
 
 import javax.swing.*;
@@ -23,11 +21,16 @@ public class FrameForm extends JFrame {
     private JPanel shop;
     private JComboBox shopSelector;
     private JLabel clicksLabel;
+    private JButton button1;
     String[] selectorTabs = {"Items", "Upgrades"};
+    boolean upgradesShown = false;
 
     AutoClicker ac = new AutoClicker();
     Mercenary merc = new Mercenary();
     ArtificialIntelligence ai = new ArtificialIntelligence();
+    ClickFarm cf = new ClickFarm();
+    Ken ken = new Ken();
+
 
     public FrameForm(){
         setContentPane(mainPanel);
@@ -43,17 +46,45 @@ public class FrameForm extends JFrame {
             public void run() {
                 clicksLabel.setText("Clicks: " + ClickerGame.getClicks());
                 clicksLabel.setToolTipText("Total clicks per second: " + ClickerGame.getTotalClicksPerSecond());
-                if(ClickerGame.getClicks() == 100){
+                if(shopSelector.getSelectedItem() == "Items") {
+                    upgradesShown = false;
+                    mainClicker.setText("+" + PlayerClicker.getCurrentClicks() + " Clicks");
+                } else{
+                    upgradesShown = true;
+                    mainClicker.setText("Upgrade player clicker? (New CPS = "+ PlayerClicker.getCurrentClicks() * 2 + ", Cost =" + PlayerClicker.getCost() +")");
+                    if(ac.isUnlocked()) {
+                        item1.setText("Upgrade " + ac.getName() + "?");
+                    }
+                    if(merc.isUnlocked()){
+                        item2.setText("Upgrade " + ac.getName() + "?");
+                    }
+                }
+
+
+                if(ClickerGame.getClicks() >= 100){
                     item1.setEnabled(true);
+                    ac.setUnlocked(true);
                     item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost()+" Clicks)");
                 }
                 if(ClickerGame.getClicks() >= 750) {
                     item2.setEnabled(true);
+                    merc.setUnlocked(true);
                     item2.setText(merc.getName() + " +" + merc.getClicksPerSecond() + " CPS (" + merc.getCost()+" Clicks)");
                 }
                 if(ClickerGame.getClicks() >= 3000) {
                     item3.setEnabled(true);
+                    ai.setUnlocked(true);
                     item3.setText(ai.getName() + " +" + ai.getClicksPerSecond() + " CPS (" + ai.getCost()+" Clicks)");
+                }
+                if(ClickerGame.getClicks() >= 10000){
+                    item4.setEnabled(true);
+                    cf.setUnlocked(true);
+                    item4.setText(cf.getName() + " +" + cf.getClicksPerSecond() + " CPS (" + cf.getCost()+" Clicks)");
+                }
+                if(ClickerGame.getClicks() >= 150000){
+                    item5.setEnabled(true);
+                    ken.setUnlocked(true);
+                    item5.setText(ken.getName() + " +" + ken.getClicksPerSecond() + " CPS (" + ken.getCost()+" Clicks)");
                 }
             }
         };
@@ -61,12 +92,23 @@ public class FrameForm extends JFrame {
         timer.schedule(task, 0L, 1L); //call the run() method at 1 second intervals
 
         //Main btn
-        mainClicker.setText("+1 Clicks");
+        mainClicker.setText("+" + PlayerClicker.getCurrentClicks() + " Clicks");
         mainClicker.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ClickerGame.addToClicks(PlayerClicker.getCurrentClicks());
-                clicksLabel.setText("Clicks: " + ClickerGame.getClicks());
+                if(!upgradesShown) {
+                    ClickerGame.addToClicks(PlayerClicker.getCurrentClicks());
+                    clicksLabel.setText("Clicks: " + ClickerGame.getClicks());
+                } else{
+                    if(ClickerGame.getClicks() >= PlayerClicker.getCost()){
+                        ClickerGame.subtractClicks(PlayerClicker.getCost());
+                        PlayerClicker.setCurrentClicks(PlayerClicker.getCurrentClicks() * 2);
+                        PlayerClicker.setCost(PlayerClicker.getCost() *2);
+                        mainClicker.setText("Upgrade player clicker? (New CPS = "+ PlayerClicker.getCurrentClicks() * 2 + ", Cost =" + PlayerClicker.getCost() +")");
+                    } else{
+                        JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
             }
         });
 
@@ -76,21 +118,25 @@ public class FrameForm extends JFrame {
         item1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(ClickerGame.getClicks() >= ac.getCost()) {
-                    //Remove clicks and raise price
-                    ClickerGame.subtractClicks(ac.getCost());
-                    double multiplier = ac.getCost() * 0.4;
-                    ac.setCost(ac.getCost() + (int)multiplier);
+                if(!upgradesShown) {
+                    if (ClickerGame.getClicks() >= ac.getCost()) {
+                        //Remove clicks and raise price
+                        ClickerGame.subtractClicks(ac.getCost());
+                        double multiplier = ac.getCost() * 0.4;
+                        ac.setCost(ac.getCost() + (int) multiplier);
 
-                    //update amount owned in tooltips
-                    ac.addAmountOwned(1);
-                    item1.setToolTipText("Buy an auto clicker to click the button for you! Owned: " + ac.getAmountOwned());
+                        //update amount owned in tooltips
+                        ac.addAmountOwned(1);
+                        item1.setToolTipText("Buy an auto clicker to click the button for you! Owned: " + ac.getAmountOwned());
 
-                    //Set the text of the button and start clicking
-                    item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost() + " Clicks)");
-                    ClickerGame.addToCPS(ac);
-                } else{
-                    JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
+                        //Set the text of the button and start clicking
+                        item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost() + " Clicks)");
+                        ClickerGame.addToCPS(ac);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
+                    }
+                } else {
+                    item1.setText("Upgrade " + ac.getName() + "?");
                 }
             }
         });
@@ -143,5 +189,59 @@ public class FrameForm extends JFrame {
             }
         });
 
+        item4.setToolTipText("Convert a Bitcoin mining facility to a click farm to generate clicks!");
+        item4.setText("Unlock at 10000 clicks");
+        item4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(ClickerGame.getClicks() >= cf.getCost()) {
+                    //Remove clicks and raise price
+                    ClickerGame.subtractClicks(cf.getCost());
+                    double multiplier = cf.getCost() * 0.7;
+                    cf.setCost(cf.getCost() + (int)multiplier);
+
+                    //update amount owned in tooltips
+                    cf.addAmountOwned(1);
+                    item4.setToolTipText("Convert a Bitcoin mining facility to a click farm to generate clicks! Owned: " + cf.getAmountOwned());
+
+                    //Set the text of the button and start clicking
+                    item4.setText(cf.getName() + " +" + cf.getClicksPerSecond() + " CPS (" + cf.getCost() + " Clicks)");
+                    ClickerGame.addToCPS(cf);
+                } else{
+                    JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        item5.setToolTipText("Buy a Ken to use his godly powers to conjure clicks from thin air!");
+        item5.setText("Unlock at 150000 clicks");
+        item5.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(ClickerGame.getClicks() >= ken.getCost()) {
+                    //Remove clicks and raise price
+                    ClickerGame.subtractClicks(ken.getCost());
+                    double multiplier = ken.getCost() * 0.7;
+                    ken.setCost(ken.getCost() + (int)multiplier);
+
+                    //update amount owned in tooltips
+                    ken.addAmountOwned(1);
+                    item5.setToolTipText("Buy a Ken to use his godly powers to conjure clicks from thin air! Owned: " + ken.getAmountOwned());
+
+                    //Set the text of the button and start clicking
+                    item4.setText(ken.getName() + " +" + ken.getClicksPerSecond() + " CPS (" + ken.getCost() + " Clicks)");
+                    ClickerGame.addToCPS(ken);
+                } else{
+                    JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ClickerGame.addToClicks(10000);
+            }
+        });
     }
 }
