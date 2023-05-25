@@ -2,6 +2,7 @@ package ui;
 
 import game.ClickerGame;
 import game.items.*;
+import game.upgrades.AutoClickerUpgrade;
 import game.upgrades.PlayerClicker;
 
 import javax.swing.*;
@@ -31,6 +32,8 @@ public class FrameForm extends JFrame {
     ClickFarm cf = new ClickFarm();
     Ken ken = new Ken();
 
+    AutoClickerUpgrade acu = new AutoClickerUpgrade();
+
 
     public FrameForm(){
         setContentPane(mainPanel);
@@ -44,47 +47,50 @@ public class FrameForm extends JFrame {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
+                //Set click label to constantly update
                 clicksLabel.setText("Clicks: " + ClickerGame.getClicks());
                 clicksLabel.setToolTipText("Total clicks per second: " + ClickerGame.getTotalClicksPerSecond());
+
+                //if item show item stuff and unlocked item stuff
                 if(shopSelector.getSelectedItem() == "Items") {
                     upgradesShown = false;
                     mainClicker.setText("+" + PlayerClicker.getCurrentClicks() + " Clicks");
-                } else{
+                    if(ac.isUnlocked()){item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost()+" Clicks)");} if(merc.isUnlocked()){item2.setText(merc.getName() + " +" + merc.getClicksPerSecond() + " CPS (" + merc.getCost()+" Clicks)");} if(ai.isUnlocked()){item3.setText(ai.getName() + " +" + ai.getClicksPerSecond() + " CPS (" + ai.getCost()+" Clicks)");} if(cf.isUnlocked()){item4.setText(cf.getName() + " +" + cf.getClicksPerSecond() + " CPS (" + cf.getCost()+" Clicks)");} if(ken.isUnlocked()){item5.setText(ken.getName() + " +" + ken.getClicksPerSecond() + " CPS (" + ken.getCost()+" Clicks)");}
+
+                    if(ClickerGame.getClicks() >= 100){
+                        item1.setEnabled(true);
+                        ac.setUnlocked(true);
+                        item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost()+" Clicks)");
+                    }
+                    if(ClickerGame.getClicks() >= 750) {
+                        item2.setEnabled(true);
+                        merc.setUnlocked(true);
+                        item2.setText(merc.getName() + " +" + merc.getClicksPerSecond() + " CPS (" + merc.getCost()+" Clicks)");
+                    }
+                    if(ClickerGame.getClicks() >= 3000) {
+                        item3.setEnabled(true);
+                        ai.setUnlocked(true);
+                        item3.setText(ai.getName() + " +" + ai.getClicksPerSecond() + " CPS (" + ai.getCost()+" Clicks)");
+                    }
+                    if(ClickerGame.getClicks() >= 10000){
+                        item4.setEnabled(true);
+                        cf.setUnlocked(true);
+                        item4.setText(cf.getName() + " +" + cf.getClicksPerSecond() + " CPS (" + cf.getCost()+" Clicks)");
+                    }
+                    if(ClickerGame.getClicks() >= 150000){
+                        item5.setEnabled(true);
+                        ken.setUnlocked(true);
+                        item5.setText(ken.getName() + " +" + ken.getClicksPerSecond() + " CPS (" + ken.getCost()+" Clicks)");
+                    }
+                } else {
                     upgradesShown = true;
                     mainClicker.setText("Upgrade player clicker? (New CPS = "+ PlayerClicker.getCurrentClicks() * 2 + ", Cost =" + PlayerClicker.getCost() +")");
                     if(ac.isUnlocked()) {
-                        item1.setText("Upgrade " + ac.getName() + "?");
+                        item1.setText("Upgrade " + ac.getName() + "? (New CPS = "+ acu.getNewCPS() + ", Cost ="  + acu.getCost() +")");
                     }
                     if(merc.isUnlocked()){
-                        item2.setText("Upgrade " + ac.getName() + "?");
+                        item2.setText("Upgrade " + merc.getName() + "?");
                     }
-                }
-
-
-                if(ClickerGame.getClicks() >= 100){
-                    item1.setEnabled(true);
-                    ac.setUnlocked(true);
-                    item1.setText(ac.getName() + " +" + ac.getClicksPerSecond() + " CPS (" + ac.getCost()+" Clicks)");
-                }
-                if(ClickerGame.getClicks() >= 750) {
-                    item2.setEnabled(true);
-                    merc.setUnlocked(true);
-                    item2.setText(merc.getName() + " +" + merc.getClicksPerSecond() + " CPS (" + merc.getCost()+" Clicks)");
-                }
-                if(ClickerGame.getClicks() >= 3000) {
-                    item3.setEnabled(true);
-                    ai.setUnlocked(true);
-                    item3.setText(ai.getName() + " +" + ai.getClicksPerSecond() + " CPS (" + ai.getCost()+" Clicks)");
-                }
-                if(ClickerGame.getClicks() >= 10000){
-                    item4.setEnabled(true);
-                    cf.setUnlocked(true);
-                    item4.setText(cf.getName() + " +" + cf.getClicksPerSecond() + " CPS (" + cf.getCost()+" Clicks)");
-                }
-                if(ClickerGame.getClicks() >= 150000){
-                    item5.setEnabled(true);
-                    ken.setUnlocked(true);
-                    item5.setText(ken.getName() + " +" + ken.getClicksPerSecond() + " CPS (" + ken.getCost()+" Clicks)");
                 }
             }
         };
@@ -103,8 +109,8 @@ public class FrameForm extends JFrame {
                     if(ClickerGame.getClicks() >= PlayerClicker.getCost()){
                         ClickerGame.subtractClicks(PlayerClicker.getCost());
                         PlayerClicker.setCurrentClicks(PlayerClicker.getCurrentClicks() * 2);
-                        PlayerClicker.setCost(PlayerClicker.getCost() *2);
-                        mainClicker.setText("Upgrade player clicker? (New CPS = "+ PlayerClicker.getCurrentClicks() * 2 + ", Cost =" + PlayerClicker.getCost() +")");
+                        PlayerClicker.setCost(PlayerClicker.getCost() *4);
+                        mainClicker.setText("Upgrade player clicker? (New CPS = "+ PlayerClicker.getCurrentClicks() * 2 + ", Cost = " + PlayerClicker.getCost() +")");
                     } else{
                         JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
                     }
@@ -136,7 +142,14 @@ public class FrameForm extends JFrame {
                         JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
                     }
                 } else {
-                    item1.setText("Upgrade " + ac.getName() + "?");
+                    if(ClickerGame.getClicks() >= acu.getCost()){
+                        ClickerGame.subtractClicks(acu.getCost());
+                        acu.setCost(acu.getCost() * 3);
+                        ac.setClicksPerSecond(ac.getClicksPerSecond() * 2);
+                        acu.setNewCPS(ac.getClicksPerSecond() * 2);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
+                    }
                 }
             }
         });
