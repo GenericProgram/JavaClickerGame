@@ -3,6 +3,7 @@ package ui;
 import game.ClickerGame;
 import game.items.*;
 import game.upgrades.AutoClickerUpgrade;
+import game.upgrades.MercUpgrade;
 import game.upgrades.PlayerClicker;
 
 import javax.swing.*;
@@ -33,6 +34,7 @@ public class FrameForm extends JFrame {
     Ken ken = new Ken();
 
     AutoClickerUpgrade acu = new AutoClickerUpgrade();
+    MercUpgrade mc = new MercUpgrade();
 
 
     public FrameForm(){
@@ -89,7 +91,7 @@ public class FrameForm extends JFrame {
                         item1.setText("Upgrade " + ac.getName() + "? (New CPS = "+ acu.getNewCPS() + ", Cost ="  + acu.getCost() +")");
                     }
                     if(merc.isUnlocked()){
-                        item2.setText("Upgrade " + merc.getName() + "?");
+                        item2.setText("Upgrade " + merc.getName() + "? (New CPS = "+ mc.getNewCPS() + ", Cost ="  + mc.getCost() +")");
                     }
                 }
             }
@@ -159,21 +161,32 @@ public class FrameForm extends JFrame {
         item2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(ClickerGame.getClicks() >= merc.getCost()) {
-                    //Remove clicks and raise price
-                    ClickerGame.subtractClicks(merc.getCost());
-                    double multiplier = merc.getCost() * 0.7;
-                    merc.setCost(merc.getCost() + (int)multiplier);
+                if(!upgradesShown) {
+                    if (ClickerGame.getClicks() >= merc.getCost()) {
+                        //Remove clicks and raise price
+                        ClickerGame.subtractClicks(merc.getCost());
+                        double multiplier = merc.getCost() * 0.7;
+                        merc.setCost(merc.getCost() + (int) multiplier);
 
-                    //update amount owned in tooltips
-                    merc.addAmountOwned(1);
-                    item2.setToolTipText("These top of the line mercs are really good at drag clicking... Owned: " + merc.getAmountOwned());
+                        //update amount owned in tooltips
+                        merc.addAmountOwned(1);
+                        item2.setToolTipText("These top of the line mercs are really good at drag clicking... Owned: " + merc.getAmountOwned());
 
-                    //Set the text of the button and start clicking
-                    item2.setText(merc.getName() + " +" + merc.getClicksPerSecond() + " CPS (" + merc.getCost() + " Clicks)");
-                    ClickerGame.addToCPS(merc);
-                } else{
-                    JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
+                        //Set the text of the button and start clicking
+                        item2.setText(merc.getName() + " +" + merc.getClicksPerSecond() + " CPS (" + merc.getCost() + " Clicks)");
+                        ClickerGame.addToCPS(merc);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
+                    }
+                } else {
+                    if(ClickerGame.getClicks() >= mc.getCost()){
+                        ClickerGame.subtractClicks(mc.getCost());
+                        mc.setCost(mc.getCost() * 3);
+                        merc.setClicksPerSecond(merc.getClicksPerSecond() * 2);
+                        mc.setNewCPS(merc.getClicksPerSecond() * 2);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Not enough clicks", "Cannot buy", JOptionPane.WARNING_MESSAGE);
+                    }
                 }
             }
         });
